@@ -5,7 +5,7 @@
 int main()
 {
 	//Zadanie 1
-	auto comp = [](auto a, auto b) {return a < b ? b : a; };
+	auto comp = [](auto a, auto b) {return a < b; };
 
 	std::cout << "Typ int: " << my_max(5, 6, comp) << "\n";
 	std::cout << "Typ float: " << my_max(5.5, 10.1, comp) << "\n\n";
@@ -31,6 +31,9 @@ int main()
 	vector.push_back(2);
 	vector.push_back(4);
 	vector.push_back(8);
+	vector.push_back(16);
+	vector.push_back(32);
+	vector.push_back(64);
 
 	//usunięcie elementu
 	vector.pop_back();
@@ -42,7 +45,10 @@ int main()
 	vector[0] = 1;
 
 	//typ danych wektora
-	std::cout << "Typ danych wektora: " << vector.data_type();
+	std::cout << "Typ danych wektora: " << vector.data_type() << "\n";
+
+	//obliczenie ilocznu sklalarnego
+	std::cout << "Iloczyn skalarny: " << vector * vector_i;
 
 	//std::cout << "vector size: " << vector.Size() << "\nvector capacity: " << vector.Capacity() << "\n";
 }
