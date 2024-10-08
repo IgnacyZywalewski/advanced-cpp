@@ -1,10 +1,13 @@
 #include <vector>
 #include <typeinfo>
+#include <stdexcept> 
 
 template<typename T, typename C>
 inline T my_max(T a, T b, C comp)
 {
-	return comp(a, b);
+	if (comp(a, b) == 0) return a;
+
+	return b;
 }
 
 template<typename T>
@@ -90,7 +93,7 @@ namespace cpplab
 				size--;
 		}
 
-		const T& operator[](size_t index) const{
+		T operator[](size_t index) const{
 			return data[index];
 		}
 
@@ -104,12 +107,30 @@ namespace cpplab
 
 		void print_vector() 
 		{
-			for (size_t i = 0; i < size; i++) {
+			for (size_t i = 0; i < size; i++) 
+			{
 				std::cout << data[i];
 
 				if (i != size - 1) std::cout << ", ";
 				else std::cout << "\n";
 			}
 		}
+
+
+		template<typename C>
+		C operator*(std::vector<C>& vector_std)
+		{
+			if (vector_std.size() != size) {
+				throw std::invalid_argument("Wektory roznego rozmiaru");
+			}
+
+			C product = 0;
+			for (size_t i = 0; i < size; i++){
+				product += data[i] * vector_std[i];
+			}
+
+			return product;
+		}
 	};
 }
+
