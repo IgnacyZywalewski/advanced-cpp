@@ -1,19 +1,19 @@
 #include <vector>
 #include <typeinfo>
 #include <stdexcept> 
+#include <string>
 
 template<typename T, typename C>
 inline T my_max(T a, T b, C comp)
 {
-	if (comp(a, b) == 0) return a;
-
-	return b;
+	return comp(a, b) == 0 ? a : b;
 }
 
 template<typename T>
 inline std::vector<T> insertion_sort(std::vector<T>& vector) 
 {
-	for (int i = 1; i < vector.size(); i++) {
+	for (int i = 1; i < vector.size(); i++) 
+	{
 		T key = vector[i];
 		int j = i - 1;
 
@@ -29,8 +29,8 @@ inline std::vector<T> insertion_sort(std::vector<T>& vector)
 	return vector;
 }
 
-template<typename T>
-inline void print_vector(std::vector<T>& vector) 
+template<typename Vec>
+inline void print_vector(const Vec& vector)
 {
 	for (int i = 0; i < vector.size(); i++)
 	{
@@ -49,18 +49,22 @@ namespace cpplab
 
 		T* data = nullptr;
 		size_t capacity = 0;
-		size_t size = 0;
-		const char* value_type = typeid(T).name();
+		size_t Size = 0;
+		std::string value_type = typeid(T).name();
 
 		void alloc(size_t new_capacity)
 		{
 			T* new_data = new T[new_capacity];
 
-			if (new_capacity < size)
-				size = new_capacity;
+			if (new_capacity < Size)
+			{
+				Size = new_capacity;
+			}
 
-			for (size_t i = 0; i < size; i++)
+			for (size_t i = 0; i < Size; i++)
+			{
 				new_data[i] = data[i];
+			}
 
 			delete[] data;
 			data = new_data;
@@ -71,66 +75,63 @@ namespace cpplab
 	public:
 		vector() {}
 
-		const size_t Size() { return size; }
-		const size_t Capacity() { return capacity; }
+		const size_t size() const { return Size; }
+		const size_t Capacity() const { return capacity; }
 
 		void push_back(const T& value)
 		{
-			if (capacity == 0) {
+			if (capacity == 0)
 				alloc(2);
-			}
 
-			if (size >= capacity)
+			if (Size >= capacity)
 				alloc(capacity + capacity / 2);
 
-			data[size] = value;
-			size++;
+			data[Size] = value;
+			Size++;
 		}
 
 		void pop_back() 
 		{
-			if(size > 0)
-				size--;
+			if(Size > 0)
+				Size--;
 		}
 
-		T operator[](size_t index) const{
+		T operator[](size_t index) const
+		{
 			return data[index];
 		}
 
-		T& operator[](size_t index) {
+		T& operator[](size_t index) 
+		{
 			return data[index];
 		}
 
-		const char* data_type() {
+		std::string data_type() 
+		{
 			return value_type;
 		}
 
-		void print_vector() 
+		~vector()
 		{
-			for (size_t i = 0; i < size; i++) 
-			{
-				std::cout << data[i];
-
-				if (i != size - 1) std::cout << ", ";
-				else std::cout << "\n";
-			}
-		}
-
-
-		template<typename C>
-		C operator*(std::vector<C>& vector_std)
-		{
-			if (vector_std.size() != size) {
-				throw std::invalid_argument("Wektory roznego rozmiaru");
-			}
-
-			C product = 0;
-			for (size_t i = 0; i < size; i++){
-				product += data[i] * vector_std[i];
-			}
-
-			return product;
+			delete[] data;
 		}
 	};
 }
 
+template<typename Vec1, typename Vec2>
+auto operator * (const Vec1& vector_1, const Vec2& vector_2)
+{
+	if (vector_1.size() != vector_2.size())
+	{
+		throw std::invalid_argument("Wektory roznego rozmiaru");
+	}
+
+	auto product = 0;
+
+	for (size_t i = 0; i < vector_1.size(); i++)
+	{
+		product += vector_1[i] * vector_2[i];
+	}
+
+	return product;
+}
