@@ -93,7 +93,10 @@ namespace cpplab
 		void pop_back() 
 		{
 			if(Size > 0)
+			{
 				Size--;
+				data[Size].~T();
+			}
 		}
 
 		T operator[](size_t index) const
