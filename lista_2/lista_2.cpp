@@ -4,14 +4,15 @@
 int main()
 {
 	//Zadanie 1
-	//std::vector<std::string> vector_s = { "batman", "bat", "apple" };
-	std::vector<std::string> vector_s = { "12", "11", "1", "123", "ala", "ale" };
-	insertion_sort(vector_s);
-	print_vector(vector_s);
+	std::vector<std::string> vector = { "11", "1", "2", "10", "ala_10", "ala_1"};
+	insertion_sort(vector);
+	print_vector(vector);
 
-	/*
-	std::vector<int> vector_i = { 123, 12, 11, 1 };
-	insertion_sort(vector_i);
-	print_vector(vector_i);
-	*/
+	//Zadanie 2
+	const int n = 5;
+	constexpr unsigned long long result = factorial<n>();
+	std::cout << "Silnia z " << n << " = " << result << "\n";
+
+	//Zadanie 3
+	print_all(1, 1.1, 1.2f, "Hello", '2');
 }
