@@ -9,11 +9,29 @@ int main()
 
     print_vector(vector_i);
     auto vector_i_output = as_sorted_view(vector_i); 
-    print_vector(vector_i_output);
+    print_pointer_vector(vector_i_output);
 
     std::cout << "\n";
 
     print_vector(vector_f);
     auto vector_f_output = as_sorted_view(vector_f);
-    print_vector(vector_f_output);
+    print_pointer_vector(vector_f_output);
+
+    std::cout << "\n";
+
+
+    //Zadanie 3    
+    forward_list<int> list;
+    list.push_back(1);
+    list.push_back(2);
+    list.push_back(3);
+    list.push_back(4);
+    list.push_back(5);
+
+    std::cout << "original: ";
+    list.print();
+
+    list.reverse();
+    std::cout << "reversed: ";
+    list.print();
 }
