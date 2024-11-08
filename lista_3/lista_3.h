@@ -2,6 +2,41 @@
 #include <vector>
 #include <algorithm>
 
+template<typename Vec>
+concept IsVectorLike = requires(Vec v, size_t i) 
+{
+	{ v.size() } -> std::convertible_to<size_t>;
+	{ v[i] };
+};
+
+template<typename T1, typename T2>
+concept IsScalarMultiplicable = requires(T1 a, T2 b) 
+{
+	{ a * b };
+	{ a += b };
+};
+
+template<IsVectorLike Vec1, IsVectorLike Vec2>
+requires IsScalarMultiplicable<typename Vec1::value_type, typename Vec2::value_type>
+auto operator * (const Vec1& vector_1, const Vec2& vector_2)
+{
+	if (vector_1.size() != vector_2.size())
+	{
+		std::cout << "Wektory roznego rozmiaru ";
+		return 0;
+	}
+
+	auto product = 0;
+
+	for (size_t i = 0; i < vector_1.size(); i++)
+	{
+		product += vector_1[i] * vector_2[i];
+	}
+
+	return product;
+}
+
+
 template<typename T>
 inline void print_vector(const std::vector<T>& vector)
 {
