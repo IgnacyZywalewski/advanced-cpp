@@ -1,36 +1,36 @@
 #pragma once
 #include <vector>
+#include <type_traits>
 #include <algorithm>
 
 template<typename Vec>
-concept IsVectorLike = requires(Vec v, size_t i) 
+concept is_vector = requires(Vec v, size_t i) 
 {
 	{ v.size() } -> std::convertible_to<size_t>;
 	{ v[i] };
 };
 
 template<typename T1, typename T2>
-concept IsScalarMultiplicable = requires(T1 a, T2 b) 
+concept is_scalar_multiplicable = requires(T1 a, T2 b) 
 {
 	{ a * b };
 	{ a += b };
 };
 
-template<IsVectorLike Vec1, IsVectorLike Vec2>
-requires IsScalarMultiplicable<typename Vec1::value_type, typename Vec2::value_type>
+template<is_vector Vec1, is_vector Vec2>
+requires is_scalar_multiplicable<typename Vec1::value_type, typename Vec2::value_type>
 auto operator * (const Vec1& vector_1, const Vec2& vector_2)
 {
 	if (vector_1.size() != vector_2.size())
 	{
-		std::cout << "Wektory roznego rozmiaru ";
-		return 0;
+		throw std::invalid_argument ("Wektory roznego rozmiaru ");
 	}
 
-	auto product = 0;
+	auto product = 0.0;
 
 	for (size_t i = 0; i < vector_1.size(); i++)
 	{
-		product += vector_1[i] * vector_2[i];
+		product += (vector_1[i] * vector_2[i]);
 	}
 
 	return product;
@@ -93,12 +93,19 @@ private:
 public:
 	forward_list() : head(nullptr) {}
 
+	void push_front(T value)
+	{
+		auto new_node = std::make_unique<Node<T>>(value);
+		new_node->next = std::move(head);
+		head = std::move(new_node);
+	}
+
 	void push_back(T value)
 	{
-		auto newNode = std::make_unique<Node<T>>(value);
+		auto new_node = std::make_unique<Node<T>>(value);
 		if (!head)
 		{
-			head = std::move(newNode);
+			head = std::move(new_node);
 		}
 		else
 		{
@@ -107,8 +114,36 @@ public:
 			{
 				current = current->next.get();
 			}
-			current->next = std::move(newNode);
+			current->next = std::move(new_node);
 		}
+	}
+
+	void pop_front()
+	{
+		if (head)
+		{
+			head = std::move(head->next);
+		}
+	}
+
+	void pop_back()
+	{
+		if (!head)
+		{
+			return;
+		}
+		else if (!head->next)
+		{
+			head = nullptr;
+			return;
+		}
+	
+		Node<T>* current = head.get();
+		while (current->next && current->next->next)
+		{
+			current = current->next.get();
+		}
+		current->next = nullptr;
 	}
 
 	
