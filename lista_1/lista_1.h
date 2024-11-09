@@ -129,7 +129,7 @@ auto operator * (const Vec1& vector_1, const Vec2& vector_2)
 		throw std::invalid_argument("Wektory roznego rozmiaru");
 	}
 
-	auto product = 0;
+	auto product = 0.0;
 
 	for (size_t i = 0; i < vector_1.size(); i++)
 	{
