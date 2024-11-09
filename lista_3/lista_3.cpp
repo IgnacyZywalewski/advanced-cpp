@@ -80,13 +80,21 @@ namespace cpplab
 int main()
 {
     //Zadanie 1
-	std::vector<float> vec1 = { 1.f, 2.f, 3.f };
+	std::vector<int> vec1 = { 1, 2, 3 };
 	cpplab::vector<int> vec2;
 	vec2.push_back(1);
 	vec2.push_back(2);
 	vec2.push_back(3);
 
-	std::cout << "Iloczyn skalarny wektorow std i cpplab: " << vec1 * vec2 << "\n";
+	std::cout << "Iloczyn skalarny wektorow std i cpplab: ";
+	try {
+		auto product = vec1 * vec2;
+		std::cout << product << "\n";
+	}
+	catch(const std::invalid_argument &e){
+		std::cout << e.what();
+	}
+	
 	
 	std::vector<std::string> vec3 = { "a", "b", "c" };
 	//std::cout << vec1 * vec3 << "\n";
@@ -120,11 +128,13 @@ int main()
 
     //Zadanie 3    
     forward_list<int> list;
+    list.push_front(0);
     list.push_back(1);
     list.push_back(2);
     list.push_back(3);
     list.push_back(4);
-    list.push_back(5);
+	list.pop_front();
+	list.pop_back();
 
     std::cout << "original: ";
     list.print();
