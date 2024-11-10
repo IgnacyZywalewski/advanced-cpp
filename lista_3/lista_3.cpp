@@ -1,110 +1,36 @@
 #include <iostream>
+#include <string>
 #include "Lista_3.h"
-
-namespace cpplab
-{
-	template<typename T>
-	class vector {
-
-		T* data = nullptr;
-		size_t capacity = 0;
-		size_t Size = 0;
-
-		void alloc(size_t new_capacity)
-		{
-			T* new_data = new T[new_capacity];
-
-			if (new_capacity < Size)
-			{
-				Size = new_capacity;
-			}
-
-			for (size_t i = 0; i < Size; i++)
-			{
-				new_data[i] = data[i];
-			}
-
-			delete[] data;
-			data = new_data;
-			capacity = new_capacity;
-		}
-
-
-	public:
-		using value_type = T;
-
-		vector() {}
-
-		~vector()
-		{
-			delete[] data;
-		}
-
-		const size_t size() const { return Size; }
-		const size_t Capacity() const { return capacity; }
-
-		void push_back(const T& value)
-		{
-			if (capacity == 0)
-				alloc(2);
-
-			if (Size >= capacity)
-				alloc(capacity + capacity / 2);
-
-			data[Size] = value;
-			Size++;
-		}
-
-		void pop_back()
-		{
-			if (Size > 0)
-			{
-				Size--;
-				data[Size].~T();
-			}
-		}
-
-		T operator[](size_t index) const
-		{
-			return data[index];
-		}
-
-		T& operator[](size_t index)
-		{
-			return data[index];
-		}
-	};
-}
 
 
 int main()
 {
     //Zadanie 1
-	std::vector<int> vec1 = { 1, 2, 3 };
-	cpplab::vector<int> vec2;
-	vec2.push_back(1);
-	vec2.push_back(2);
-	vec2.push_back(3);
+	std::vector<float> vector1 = { 1.5f, 2.5f, 3.5f };
+	cpplab::vector<int> vector2;
+	vector2.push_back(1);
+	vector2.push_back(2);
+	vector2.push_back(3);
 
 	std::cout << "Iloczyn skalarny wektorow std i cpplab: ";
-	try {
-		auto product = vec1 * vec2;
-		std::cout << product << "\n";
+	try 
+	{
+		std::cout << vector1 * vector2 << "\n";
 	}
-	catch(const std::invalid_argument &e){
+	catch (const std::invalid_argument &e)
+	{
 		std::cout << e.what();
 	}
 	
-	
-	std::vector<std::string> vec3 = { "a", "b", "c" };
-	//std::cout << vec1 * vec3 << "\n";
+	std::vector<std::string> vector3 = { "a", "b", "c" };
+	std::cout << vector1 * vector3; // nie zadziala
 
 	struct CustomType {
 		int value;
 		CustomType(int v) : value(v) {}
 	};
-	std::vector<CustomType> vec4 = { CustomType(1), CustomType(2), CustomType(3) };
-	//std::cout << vec * vec4 << "\n";
+	std::vector<CustomType> vector4 = { CustomType(1), CustomType(2), CustomType(3) };
+	std::cout << vector1 * vector4; // nie zadziala
 
 	std::cout << "\n";
 
