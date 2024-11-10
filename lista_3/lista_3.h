@@ -1,7 +1,85 @@
 #pragma once
+
 #include <vector>
 #include <type_traits>
 #include <algorithm>
+#include <memory>
+
+namespace cpplab
+{
+	template<typename T>
+	class vector {
+
+		T* data = nullptr;
+		size_t capacity = 0;
+		size_t Size = 0;
+
+		void alloc(size_t new_capacity)
+		{
+			T* new_data = new T[new_capacity];
+
+			if (new_capacity < Size)
+			{
+				Size = new_capacity;
+			}
+
+			for (size_t i = 0; i < Size; i++)
+			{
+				new_data[i] = data[i];
+			}
+
+			delete[] data;
+			data = new_data;
+			capacity = new_capacity;
+		}
+
+
+	public:
+		vector() {}
+
+		~vector()
+		{
+			delete[] data;
+		}
+
+		using value_type = T;
+
+		const size_t size() const { return Size; }
+		const size_t Capacity() const { return capacity; }
+
+		void push_back(const T& value)
+		{
+			if (capacity == 0)
+				alloc(2);
+
+			if (Size >= capacity)
+				alloc(capacity + capacity / 2);
+
+			data[Size] = value;
+			Size++;
+		}
+
+		void pop_back()
+		{
+			if (Size > 0)
+			{
+				Size--;
+				data[Size].~T();
+			}
+		}
+
+		T operator[](size_t index) const
+		{
+			return data[index];
+		}
+
+		T& operator[](size_t index)
+		{
+			return data[index];
+		}
+	};
+}
+
 
 template<typename Vec>
 concept is_vector = requires(Vec v, size_t i) 
@@ -11,29 +89,29 @@ concept is_vector = requires(Vec v, size_t i)
 };
 
 template<typename T1, typename T2>
-concept is_scalar_multiplicable = requires(T1 a, T2 b) 
+concept is_arithmetic = requires(T1 a, T2 b)
 {
 	{ a * b };
 	{ a += b };
 };
 
 template<is_vector Vec1, is_vector Vec2>
-requires is_scalar_multiplicable<typename Vec1::value_type, typename Vec2::value_type>
+requires is_arithmetic<typename Vec1::value_type, typename Vec2::value_type>
 auto operator * (const Vec1& vector_1, const Vec2& vector_2)
 {
 	if (vector_1.size() != vector_2.size())
 	{
-		throw std::invalid_argument ("Wektory roznego rozmiaru ");
+		throw std::invalid_argument ("Wektory roznego rozmiaru\n");
 	}
 
-	auto product = 0.0;
+	auto dot_product = 0.0;
 
 	for (size_t i = 0; i < vector_1.size(); i++)
 	{
-		product += (vector_1[i] * vector_2[i]);
+		dot_product += (vector_1[i] * vector_2[i]);
 	}
 
-	return product;
+	return dot_product;
 }
 
 
@@ -51,9 +129,10 @@ inline void print_vector(const std::vector<T>& vector)
 template<typename T>
 inline void print_pointer_vector(const std::vector<T*>& vector)
 {
-	for (auto& x : vector)
+	for (int i = 0; i < vector.size(); i++)
 	{
-		std::cout << *x << " ";
+		if (i == vector.size() - 1) std::cout << *vector[i];
+		else std::cout << *vector[i] << ", ";
 	}
 	std::cout << "\n";
 }
@@ -87,7 +166,6 @@ struct Node
 template<typename T>
 class forward_list
 {
-private:
 	std::unique_ptr<Node<T>> head;
 
 public:
@@ -137,13 +215,15 @@ public:
 			head = nullptr;
 			return;
 		}
-	
-		Node<T>* current = head.get();
-		while (current->next && current->next->next)
+		else
 		{
-			current = current->next.get();
+			Node<T>* current = head.get();
+			while (current->next && current->next->next)
+			{
+				current = current->next.get();
+			}
+			current->next = nullptr;
 		}
-		current->next = nullptr;
 	}
 
 	
@@ -152,10 +232,14 @@ public:
 		Node<T>* current = head.get();
 		while (current)
 		{
-			std::cout << current->data << " -> ";
+			std::cout << current->data;
+			if (current->next)
+			{
+				std::cout << " -> ";
+			}
 			current = current->next.get();
 		}
-		std::cout << "null\n";
+		std::cout << "\n";
 	}
 
 	
