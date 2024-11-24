@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <utility>
 
 namespace cpplab
 {
@@ -37,18 +38,10 @@ namespace cpplab
 		}
 
 		vector(const vector& vec)
-			:m_Capacity(vec.m_Capacity), m_Size(vec.m_Size)
+			:m_Capacity(vec.m_Capacity), m_Size(vec.m_Size), data(new T[vec.m_Capacity])
 		{
 			std::cout << "konstruktor kopiujacy\n";
-			data = new T[m_Capacity];
-			if (vec.data != nullptr)
-			{
-				for (size_t i = 0; i < m_Size; i++)
-				{
-					data[i] = vec.data[i];
-				}
-			}
-
+			std::copy(&vec.data[0], &vec.data[0] + m_Size, &data[0]);
 		}
 
 		vector(vector&& vec) noexcept
@@ -65,14 +58,15 @@ namespace cpplab
 			std::cout << "operator kopiujacy\n";
 			if (this != &vec)
 			{
-				alloc(vec.m_Capacity);
-				m_Size = vec.m_Size;
-
-				for (size_t i = 0; i < m_Size; i++)
+				if (m_Capacity < vec.m_Size)
 				{
-					data[i] = vec.data[i];
+					delete[] data;
+					m_Capacity = vec.m_Capacity;
+					data = new T[m_Capacity];
 				}
 
+				m_Size = vec.m_Size;
+				std::copy(&vec.data[0], &vec.data[0] + m_Size, &data[0]);
 			}
 			return *this;
 		}
@@ -82,6 +76,7 @@ namespace cpplab
 			std::cout << "operator przenoszacy\n";
 			if (this != &vec)
 			{
+				delete[] data;
 				data = vec.data;
 				m_Size = vec.m_Size;
 				m_Capacity = vec.m_Capacity;
@@ -100,7 +95,6 @@ namespace cpplab
 		}
 
 		using value_type = T;
-
 		const size_t size() const { return m_Size; }
 		const size_t capacity() const { return m_Capacity; }
 
@@ -114,6 +108,19 @@ namespace cpplab
 
 			data[m_Size] = value;
 			m_Size++;
+		}
+
+		template<typename... Args>
+		T& emplace_back(Args&&... args)
+		{
+			if (m_Capacity == 0)
+				alloc(2);
+
+			if (m_Size >= m_Capacity)
+				alloc(m_Capacity + m_Capacity / 2);
+
+			data[m_Size] = T(std::forward<Args>(args)...);
+			return data[m_Size++];
 		}
 
 		void pop_back()
@@ -137,14 +144,31 @@ namespace cpplab
 	};
 }
 
+struct Pixel
+{
+	int red = 0, green = 0, blue = 0;
+	Pixel() = default;
+	Pixel(int value) : red(value), green(value), blue(value) {};
+	Pixel(int r, int g, int b): red(r), green(g), blue(b) {};
+};
+
 template<typename T>
-void print_vector(const T& vector)
+void print_vector(const cpplab::vector<T>& vector)
 {
 	for (int i = 0; i < vector.size(); i++)
 	{
 		if (i == vector.size() - 1) std::cout << vector[i];
-		
+
 		else std::cout << vector[i] << ", ";
 	}
 	std::cout << "\n";
+}
+template<>
+void print_vector(const cpplab::vector<Pixel>& vector)
+{
+	for (int i = 0; i < vector.size(); i++)
+	{
+		std::cout << vector[i].red << ", " << vector[i].green << ", " << vector[i].blue;
+		std::cout << "\n";
+	}
 }
