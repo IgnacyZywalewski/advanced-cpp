@@ -3,24 +3,23 @@
 namespace cpplab
 {
 	template<typename T>
-	class unique_ptr
-	{
+	class unique_ptr{
 
 	private:
-		T* pointer;
+		T* m_Pointer;
 
 	public:
-		unique_ptr(): pointer(nullptr) {}
-		unique_ptr(T* ptr): pointer(ptr) {}
-		unique_ptr(unique_ptr&& ptr) noexcept : pointer(ptr.pointer) { ptr.pointer = nullptr; }
+		unique_ptr(): m_Pointer(nullptr) {}
+		unique_ptr(T* ptr): m_Pointer(ptr) {}
+		unique_ptr(unique_ptr&& ptr) noexcept : m_Pointer(ptr.m_Pointer) { ptr.m_Pointer = nullptr; }
 
 		unique_ptr& operator=(unique_ptr&& ptr) noexcept
 		{
 			if (this != &ptr)
 			{
 				reset();
-				pointer = ptr.pointer;
-				ptr.pointer = nullptr;
+				m_Pointer = ptr.m_Pointer;
+				ptr.m_Pointer = nullptr;
 			}
 			return *this;
 		}
@@ -33,42 +32,36 @@ namespace cpplab
 
 		T& operator*() const
 		{
-			return *pointer;
+			return *m_Pointer;
 		}
 
-
-		T* release()
-		{
-			T* temp = pointer;
-			pointer = nullptr;
-			return temp;
-		}
 
 		void reset(T* ptr = nullptr)
 		{
-			if (pointer)
+			if (m_Pointer)
 			{
-				delete pointer;
+				delete m_Pointer;
 			}
-			pointer = ptr;
+			
+			m_Pointer = ptr;
 		}
 
 		void swap(unique_ptr<T>& ptr)
 		{
-			T* temp = pointer;
-			pointer = ptr.get();
-			ptr.pointer = temp;
+			T* temp = m_Pointer;
+			m_Pointer = ptr.get();
+			ptr.m_Pointer = temp;
 		}
 
 
 		T* get() const
 		{
-			return pointer;
+			return m_Pointer;
 		}
 
 		explicit operator bool() const
 		{
-			return pointer != nullptr;
+			return m_Pointer != nullptr;
 		}
 		
 	};
